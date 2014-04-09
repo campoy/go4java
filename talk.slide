@@ -1,0 +1,158 @@
+Go for Javaneros
+
+* Java: defining methods
+
+	public class Programmer {
+		private int caffeineLevel;
+
+		public void drinkCoffee() {
+			this.caffeineLevel++;
+		}
+		public bool isAwake() {
+			return this.caffeineLevel > 42;
+		}
+	}
+
+* Go: defining methods
+
+	type Programmer struct {
+		caffeineLevel int
+	}
+	func (p *Programmer) DrinkCoffee() {
+		p.caffeineLevel++
+	}
+	func (p *Programmer) isAwake() bool {
+		return p.caffeineLevel > 42
+	}
+
+* Java: Can we define method on ints?
+
+Yeah, kinda. Just put it in a class!
+
+public class Int {
+	private int value;
+
+	public Int Sum(int x) {
+		return new Int(this.value + x)
+	}
+}
+
+This implies we need boxing and unboxing
+
+* Go: Can we defined methods on ints
+
+Yes.
+
+	type MyInt int
+	func (m MyInt) Sum(int x) MyInt { return m + MyInt(x)}
+
+* Java interfaces
+
+	package doer
+
+	interface Doer {
+		void Do() throws Exception
+	}
+
+	package mydoer
+
+	// TODO: revise imports in Java
+	import doer
+
+	class MyDoer implements Doer {
+		void Do() throws Exception { ... }
+	}
+
+MyDoer *depends* on Doer
+
+We can't u
+
+
+* Java: It's inheritance all the way!
+
+The Dog is-an Animal is not something we don't model often in SI.
+
+Often inheritance is used to expose part of another class behavior.
+
+public class Engine (extends Object) {
+	public start() {
+		...
+	}
+	public stop() {
+		...
+	}
+}
+
+// We can start and stop a car, so ... it makes sense
+public class Car extends Engine {
+}
+
+So Car is-an Engine. Say what?
+
+* Java: Composition is possible
+
+Composition models this better:
+
+public class Car {
+	private Engine engine;
+
+	public start() {
+		this.engine.start()
+	}
+
+	public stop() {
+		this.engine.stop()
+	}
+}
+
+But it feels too verbose!
+
+* Go: Composition
+
+type Engine struct { ... }
+func (e Engine) Start() { ... }
+func (e Engine) Stop() { ... }
+
+type Car struct {
+	e Engine
+}
+func (c Car) Start() { c.e.Start() }
+func (c Car) Stop() { c.e.Stop() }
+
+* Go: struct embedding
+
+type Car struct {
+	Engine
+}
+
+Boom!
+
+* Partial inheritance?
+
+* Java: hiding methods that are public on the parent
+
+public class UnstoppableCar extends Car {
+	private stop() { ... }
+}
+
+NOPE
+
+* Go: Struct embedding of interfaces
+
+type starter interface {
+	Start()
+}
+
+type UnstoppableCar struct {
+	Starter
+}
+
+func main() {
+	uc := UnstoppableCar{Engine{}}
+}
+
+* Multiple inheritance
+
+Java: no!
+
+Go: yes :)
