@@ -1,29 +1,13 @@
 Go for Javaneros
 
+
 * Java: defining methods
 
-	public class Programmer {
-		private int caffeineLevel;
-
-		public void drinkCoffee() {
-			this.caffeineLevel++;
-		}
-		public bool isAwake() {
-			return this.caffeineLevel > 42;
-		}
-	}
+.code go4java/programmer.java
 
 * Go: defining methods
 
-	type Programmer struct {
-		caffeineLevel int
-	}
-	func (p *Programmer) DrinkCoffee() {
-		p.caffeineLevel++
-	}
-	func (p *Programmer) isAwake() bool {
-		return p.caffeineLevel > 42
-	}
+.code go4java/programmer.go /Programmer/,
 
 * Java: Can we define method on ints?
 

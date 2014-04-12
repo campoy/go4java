@@ -1,0 +1,272 @@
+Go for Javaneros
+ #go4java
+
+Francesc Campoy
+Gopher and Developer Advocate
+Google
+@francesc
+
+
+* Agenda
+
+TODO
+
+* A brief history of Go
+
+TODO
+
+* Object oriented flavors
+
+Go is Object Oriented, but doesn't have any of the keywords:
+
+- `class`,
+- `extends`, or
+- `implements`.
+
+* Declaring methods
+
+TODO
+
+From the [[http://docs.oracle.com/javase/tutorial/java/javaOO/methods.html][Java tutorial]]
+
+_Note:_ Overloaded methods should be used sparingly, as they can make code much less readable.
+
+* Interfaces
+
+* It's all about satisfaction
+
+Java interfaces are satisfied *explicitly*.
+
+Go interfaces are satisfied *implicitly*.
+
+.image go4java/img/satisfaction.jpg 400 600
+
+* Java: explicit satisfaction = "implements"
+
+`printHiTo` needs an object with `void print(String)`
+
+.code go4java/InterfaceSat.java /START_PRINT_TO/,/END_PRINT_TO/
+
+`System.out` has that method, let's use it!
+
+.code go4java/InterfaceSat.java /START_BAD/,/END_BAD/
+
+Fails with:
+
+	error: incompatible types: PrintStream cannot be converted to StringPrinter
+	    static StringPrinter sp = System.out;
+
+* Solution #1
+
+Approach: 
+
+- Modify `PrintStream` in the Java standard library.
+- Add `implements StringPrinter`.
+
+	class PrintStream implements Closeable, Flushable, Appendable, AutoCloseable, StringPrinter
+
+Result:
+
+- Shame and dependencies.
+
+* Solution #2
+
+Approach:
+
+- Add a new class that implements `StringPrinter` given a `PrinterStream`
+
+.code go4java/InterfaceSat.java /START_MyStringPrinter/,/END_MyStringPrinter/
+
+Result:
+
+Boilerplate to create the class, but calls are short.
+
+.code go4java/InterfaceSat.java /new MyStringPrinter/
+
+* Solution #3
+
+Approach:
+
+- Create an anonymous class implementing `StringPrinter`
+
+Result:
+
+Boilerplate in every call.
+
+.code go4java/InterfaceSat.java /new StringPrinter/,/\}\)/
+
+* Go: implicit satisfaction = no "implements"
+
+If a type defines all the methods of an interface, the type satisfies that interface.
+
+.code go4java/InterfaceSat.go /Writer/,/^}/
+
+.code go4java/InterfaceSat.go /PrintHiTo/,/^}/
+
+`os.Stdout` is a `*os.File`, which defines `Write` among other methods.
+
+	func (f *File) Write(b []byte) (n int, err error)
+
+Therefore we can simply use `os.Stdout` as a `MyWriter`.
+
+.code go4java/InterfaceSat.go /func main/,/^}/
+
+* Inheritance vs composition
+
+* Inheritance vs composition
+
+Lots of articles have been written about the topic.
+
+In general, composition is preferred to inheritance.
+
+Lets see why.
+
+* Task
+
+.code go4java/BadInheritance.java /START_TASK/,/END_TASK/
+
+* Runner
+
+.code go4java/BadInheritance.java /START_RUNNER/,/END_RUNNER/
+
+* CountingRunner is-a Runner that counts
+
+.code go4java/BadInheritance.java /START_COUNTING/,/END_COUNTING/
+
+* Let's run and count
+
+What will this code print?
+
+.code go4java/BadInheritance.java /START_MAIN/,/END_MAIN/
+
+Of course, this prints:
+
+	running one
+	running two
+	running three
+	my runner ran 6 tasks
+
+* My runner ran 6 tasks? Six?
+
+Inheritance causes:
+
+- weak encapsulation,
+- tightly coupling,
+- surprising bugs.
+
+.image go4java/img/countingrunner.png
+
+* Solution: use composition
+
+.code go4java/Composition.java /START_COUNTING/,/END_COUNTING/
+
+* Solution: use composition
+
+*Pros*
+
+- The bug is gone!
+- `Runner` is completely independent of `CountingRunner`.
+- The creation of the `Runner` can be delayed until (and if) needed.
+
+*Cons*
+
+- Composition doesn't define any methods on `CountingRunner`:
+
+	public String getName() { return runner.getName(); }
+
+- This can cause lots of repetition, and eventual bugs!
+
+* And now in Go
+
+Go doesn't provide inheritance, so the original bug is impossible to write.
+
+.code go4java/Composition.go /TASK/,/RUNNER/
+
+.code go4java/Composition.go /RUNNER/,/COUNTING/
+
+* CountingRunner
+
+.code go4java/Composition.go /COUNTING/,/MAIN/
+
+
+* Lambdas vs Functions literals
+
+TODO
+
+* Values, references, and pointers
+
+* Q1: Are function parameters passed by value or reference?
+
+a) everything is passed by reference.
+b) everything is passed by value.
+c) classes by reference, others by value.
+
+* Q2: Does Java have pointers?
+
+a) No
+b) Nope
+
+* a) everything is passed by reference?
+
+Nope!
+
+.code go4java/ValueRef.java /START_VALUE/,/START_REPLACE/
+
+At least simple types are passed by value.
+
+* b) everything is passed by value?
+
+Given the class Integer:
+
+.code go4java/ValueRef.java /START_INTEGER/,/START_REF/
+
+Objects are not passed by value, since they can be modified.
+
+.code go4java/ValueRef.java /START_REF/,/START_VALUE/
+
+
+* c) classes by reference, others by value!
+
+Well ... nope!
+
+.code go4java/ValueRef.java /START_REPLACE/,/START_MAIN/
+
+Java objects are passed by "sharing"
+
+_Source_: [[http://en.wikipedia.org/wiki/Call_by_sharing#Call_by_sharing]]
+
+* What about Go?
+
+Go has pointers,
+
+- but no pointer arithmetics.
+
+Parameters are passed by value,
+
+- and a copy of a pointer points to the same address.
+
+* Some code
+
+Go doesn't have classes, but it has structs.
+
+.code go4java/ValueRef.go /struct/,/^}/
+
+Pointers allow the function to modify the original variable.
+
+.code go4java/ValueRef.go /DoubleInteger/,/DoubleIntPtr/
+
+* Same behavior for all types
+
+Passing Integer means the function gets a copy of the original value.
+
+.code go4java/ValueRef.go /v := Integer/,/4/
+
+And the same applies to int.
+
+.code go4java/ValueRef.go /i := 2/,/4/
+
+* Concurrency
+
+* Sources
+
+Picture of Mick Jagger: http://www.telegraph.co.uk/news/politics/10031400/Michael-Gove-gives-Sir-Mick-Jagger-little-satisfaction.html
