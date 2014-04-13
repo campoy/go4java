@@ -3,18 +3,12 @@ package main
 import "fmt"
 
 // TASK OMIT
-type Task struct {
-	msg string
-}
+type Task struct{ msg string }
 
-func (t Task) Run() {
-	fmt.Println("running", t.msg)
-}
+func (t Task) Run() { fmt.Println("running", t.msg) }
 
 // RUNNER OMIT
-type Runner struct {
-	name string
-}
+type Runner struct{ name string }
 
 func NewRunner(name string) *Runner { return &Runner{name} }
 func (r *Runner) Name() string      { return r.name }
@@ -33,7 +27,7 @@ type CountingRunner struct {
 }
 
 func NewCountingRunner(name string) *CountingRunner {
-	return &CountingRunner{NewRunner(name), 0}
+	return &CountingRunner{runner: NewRunner(name)}
 }
 
 func (r *CountingRunner) Run(t Task) {

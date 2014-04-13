@@ -6,14 +6,17 @@ Gopher and Developer Advocate
 Google
 @francesc
 
+* Go and Java common aspects
 
-* Agenda
+Go and Java are
 
-TODO
+- object oriented.
 
-* A brief history of Go
+- garbage collected.
 
-TODO
+- statically typed.
+
+- part of the C family.
 
 * Object oriented flavors
 
@@ -23,15 +26,150 @@ Go is Object Oriented, but doesn't have any of the keywords:
 - `extends`, or
 - `implements`.
 
+* Call by values, by reference, and pointers
+
+* Q1: Are Java parameters passed by value or reference?
+
+Options:
+
+a) everything is passed by reference.
+
+b) everything is passed by value.
+
+c) objects by reference, others by value.
+
+* Q2: Does Java have pointers?
+
+Options:
+
+a) No
+
+b) Nope
+
+* a) everything is passed by reference?
+
+Nope!
+
+.code go4java/ValueRef.java /START_VALUE/,/START_REPLACE/
+
+At least simple types are passed by value.
+
+* b) everything is passed by value?
+
+Given the class Integer:
+
+.code go4java/ValueRef.java /START_INTEGER/,/START_REF/
+
+Objects are not passed by value, since they can be modified.
+
+.code go4java/ValueRef.java /START_REF/,/START_VALUE/
+
+* c) objects by reference, others by value!
+
+Well ... nope!
+
+.code go4java/ValueRef.java /START_REPLACE/,/START_MAIN/
+
+Java objects are passed by "sharing"
+
+_Source_: [[http://en.wikipedia.org/wiki/Call_by_sharing#Call_by_sharing]]
+
+* What about Go?
+
+Go has pointers,
+
+- but no pointer arithmetics.
+
+Parameters are passed by value,
+
+- and two copies of a pointer point to the same space in memory.
+
+* Some code
+
+Go doesn't have classes, but it has structs.
+
+.code go4java/ValueRef.go /struct/,/^}/
+
+Pointers allow the function to modify the original variable.
+
+.code go4java/ValueRef.go /DoubleInteger/,/DoubleIntPtr/
+
+* Same behavior for all types
+
+Passing Integer means the function gets a copy of the original value.
+
+.code go4java/ValueRef.go /v := Integer/,/4/
+
+And the same applies to int.
+
+.code go4java/ValueRef.go /i := 2/,/4/
+
+* So
+
+Go has pointers and everything is passed by value.
+
+Just like Java!
+
+.image go4java/img/pointer.png
+
 * Declaring methods
 
-TODO
+What we said about parameters also applies to method receivers.
 
-From the [[http://docs.oracle.com/javase/tutorial/java/javaOO/methods.html][Java tutorial]]
+A method on `Integer` receives a copy:
 
-_Note:_ Overloaded methods should be used sparingly, as they can make code much less readable.
+	func (v Integer) Double() { v.Value *= 2 }
+
+	func main() {
+		v := Integer{2}
+		v.Double()
+		// v.Value is still 2
+	}
+
+A method on `*Integer` receives a copy of a pointer:
+
+	func (v *Integer) Double() { v.Value *= 2 }
+
+	func main() {
+		v := Integer{2}
+		v.Double()
+		// v.Value is now 4
+	}
+
+* Declaring methods on other types
+
+We can define methods on any type declared on the same package.
+
+This is not allowed:
+
+	func (v int) Double()  { v *= 2 }
+
+But we can define a new type `myInt`:
+
+	type myInt int
+
+	func (v myInt) Double()  { v *= 2 }
+	func (v *myInt) Double() { *v *= 2 }
 
 * Interfaces
+
+* Interfaces
+
+An interface is a set of methods.
+
+In Java:
+
+	interface Switch {
+		void open();
+		void close();
+	}
+
+In Go:
+
+	type OpenCloser interface {
+		Open()
+		Close()
+	}
 
 * It's all about satisfaction
 
@@ -107,9 +245,21 @@ If a type defines all the methods of an interface, the type satisfies that inter
 
 	func (f *File) Write(b []byte) (n int, err error)
 
-Therefore we can simply use `os.Stdout` as a `MyWriter`.
+* Go: implicit satisfaction = no "implements"
+
+Since
+
+- `*os.File` has all the methods that `MyWriter` requires
+
+we know that
+
+- `*os.File` is a `MyWriter`.
 
 .code go4java/InterfaceSat.go /func main/,/^}/
+
+This is named *structural*subtyping*.
+
+Think duck typing checked at compilation time.
 
 * Inheritance vs composition
 
@@ -146,6 +296,8 @@ Of course, this prints:
 	running three
 	my runner ran 6 tasks
 
+Wait! How many?
+
 * My runner ran 6 tasks? Six?
 
 Inheritance causes:
@@ -174,13 +326,17 @@ Inheritance causes:
 
 	public String getName() { return runner.getName(); }
 
-- This can cause lots of repetition, and eventual bugs!
+- This can cause lots of repetition, and eventually bugs.
 
-* And now in Go
+* There's no inheritance in Go
 
-Go doesn't provide inheritance, so the original bug is impossible to write.
+* There's no inheritance in Go
+
+Let's use composition directly:
 
 .code go4java/Composition.go /TASK/,/RUNNER/
+
+`Task` and `Runner` are very similar to the Java version.
 
 .code go4java/Composition.go /RUNNER/,/COUNTING/
 
@@ -188,85 +344,112 @@ Go doesn't provide inheritance, so the original bug is impossible to write.
 
 .code go4java/Composition.go /COUNTING/,/MAIN/
 
+* Composition in Go
 
-* Lambdas vs Functions literals
+Same pros and cons as the composition version in Java.
 
-TODO
+We also have the boilerplate to proxy methods from `Runner`.
 
-* Values, references, and pointers
+.code go4java/Composition.go /runner.Name/
 
-* Q1: Are function parameters passed by value or reference?
+But we can remove it!
 
-a) everything is passed by reference.
-b) everything is passed by value.
-c) classes by reference, others by value.
+* Struct embedding
 
-* Q2: Does Java have pointers?
+Materialized as unnamed fields in a struct.
 
-a) No
-b) Nope
+It is still *composition*.
 
-* a) everything is passed by reference?
+The methods of the embedded type become methods of the embedding type.
 
-Nope!
+* Example of struct embedding
 
-.code go4java/ValueRef.java /START_VALUE/,/START_REPLACE/
+Given a type `Person`:
 
-At least simple types are passed by value.
+.code go4java/embedsample.go /Person/,/Hi/
 
-* b) everything is passed by value?
+We can define a type `Employee` embedding `Person`:
 
-Given the class Integer:
+.code go4java/embedsample.go /Employee/,/}/
 
-.code go4java/ValueRef.java /START_INTEGER/,/START_REF/
+All fields and methods from `Person` are available on `Employee`:
 
-Objects are not passed by value, since they can be modified.
+.play go4java/embedsample.go /func main/,/^}/
 
-.code go4java/ValueRef.java /START_REF/,/START_VALUE/
+* Struct embedding
 
+.code go4java/embedding.go /COUNTING/,/MAIN/
 
-* c) classes by reference, others by value!
+* Is struct embedding like inheritance?
 
-Well ... nope!
+No, it's better!
 
-.code go4java/ValueRef.java /START_REPLACE/,/START_MAIN/
+- It is composition
+- Struct embedding of interfaces exports only a set of the methods of the embedded value.
 
-Java objects are passed by "sharing"
+TODO: find example, compare to Java hiding inherited methods (private inheritance)
 
-_Source_: [[http://en.wikipedia.org/wiki/Call_by_sharing#Call_by_sharing]]
+* Lambdas
 
-* What about Go?
+* Improving Runner
 
-Go has pointers,
+We could make our `Runner` example more generic using interfaces.
 
-- but no pointer arithmetics.
+.code go4java/Lambdas.java /START/,/END/
 
-Parameters are passed by value,
+And then call `run` with an anonymous interface.
 
-- and a copy of a pointer points to the same address.
+.code go4java/Lambdas.java /ANONYMOUS/,/LAMBDA/
 
-* Some code
+* Lambdas
 
-Go doesn't have classes, but it has structs.
+Lambda expressions let you express instances of single-method classes more compactly
 
-.code go4java/ValueRef.go /struct/,/^}/
+- Lambda expressions generate interface instances.
+- They have a better syntax than anonymous interfaces.
 
-Pointers allow the function to modify the original variable.
+The code:
 
-.code go4java/ValueRef.go /DoubleInteger/,/DoubleIntPtr/
+.code go4java/Lambdas.java /new Task/,/LAMBDA/
 
-* Same behavior for all types
+is equivalent to:
 
-Passing Integer means the function gets a copy of the original value.
+.code go4java/Lambdas.java /lambda/
 
-.code go4java/ValueRef.go /v := Integer/,/4/
+* Lambdas in Go: function values
 
-And the same applies to int.
+Functions are first class citizens in Go.
 
-.code go4java/ValueRef.go /i := 2/,/4/
+Variables can hold functions:
+
+	sum := func(x, y int) int { return x + y }
+
+Functions can return functions:
+
+.code go4java/funcs.go /adder/,/^}/
+
+Functions all around:
+
+.code go4java/funcs.go /START/,/END/
+
+* Lambdas in Go: function values
+
+`Runner` now runs functions of type `func()`.
+
+.code go4java/Lambdas.go /START_RUNNER/,/START_TASK/
+
+We can call `Run` with a literal function.
+
+.code go4java/Lambdas.go /RUN_LIT/,/RUN_METHOD/
+
+* Lambdas in Go: method values
+
+Or using the `Task` type we defined before:
+
+.code go4java/Lambdas.go /START_TASK/,/END_TASK/
+
+We can call `Run` with a method value.
+
+.code go4java/Lambdas.go /RUN_METHOD/,/END_MAIN/
 
 * Concurrency
-
-* Sources
-
-Picture of Mick Jagger: http://www.telegraph.co.uk/news/politics/10031400/Michael-Gove-gives-Sir-Mick-Jagger-little-satisfaction.html

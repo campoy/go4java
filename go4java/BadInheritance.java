@@ -10,7 +10,7 @@ class BadInheritance {
             this.message = message;
         }
 
-        public void Run() {
+        public void run() {
             System.out.println("running " + this.message);
         }
     }
@@ -28,13 +28,13 @@ class BadInheritance {
             return this.name;
         }
 
-        public void Run(Task task) { // HL
-            task.Run();
+        public void run(Task task) { // HL
+            task.run();
         }
 
-        public void RunAll(Task[] tasks) { // HL
+        public void runAll(Task[] tasks) { // HL
             for (Task task : tasks) {
-                Run(task);
+                run(task);
             }
         }
     }
@@ -49,14 +49,14 @@ class BadInheritance {
             this.count = 0;
         }
 
-        @Override public void Run(Task task) {
+        @Override public void run(Task task) {
             count++; // HL
-            super.Run(task);
+            super.run(task);
         }
 
-        @Override public void RunAll(Task[] tasks) {
+        @Override public void runAll(Task[] tasks) {
             count += tasks.length; // HL
-            super.RunAll(tasks);
+            super.runAll(tasks);
         }
 
         public int getCount() {
@@ -70,7 +70,7 @@ class BadInheritance {
         CountingRunner runner = new CountingRunner("my runner");
 
         Task[] tasks = { new Task("one"), new Task("two"), new Task("three")};
-        runner.RunAll(tasks);
+        runner.runAll(tasks);
 
         System.out.printf("%s ran %d tasks\n", runner.getName(), runner.getCount());
         // END_MAIN OMIT

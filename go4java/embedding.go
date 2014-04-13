@@ -19,8 +19,8 @@ func (r *Runner) RunAll(ts []Task) {
 
 // COUNTING OMIT
 type CountingRunner struct {
-	*Runner
-	count int
+	*Runner // HL
+	count   int
 }
 
 func NewCountingRunner(name string) *CountingRunner {

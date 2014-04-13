@@ -9,7 +9,7 @@ class Composition {
             this.message = message;
         }
 
-        public void Run() {
+        public void run() {
             System.out.println("running " + this.message);
         }
     }
@@ -25,13 +25,13 @@ class Composition {
             return this.name;
         }
 
-        public void Run(Task task) {
-            task.Run();
+        public void run(Task task) {
+            task.run();
         }
 
-        public void RunAll(Task[] tasks) {
+        public void runAll(Task[] tasks) {
             for (Task task : tasks) {
-                Run(task);
+                run(task);
             }
         }
     }
@@ -46,14 +46,14 @@ class Composition {
             this.count = 0;
         }
 
-        public void Run(Task task) {
+        public void run(Task task) {
             count++;
-            runner.Run(task);
+            runner.run(task);
         }
 
-        public void RunAll(Task[] tasks) {
+        public void runAll(Task[] tasks) {
             count += tasks.length;
-            runner.RunAll(tasks);
+            runner.runAll(tasks);
         }
 
         public int getCount() { return count; }
@@ -67,7 +67,7 @@ class Composition {
         CountingRunner runner = new CountingRunner("my runner");
 
         Task[] tasks = { new Task("one"), new Task("two"), new Task("three")};
-        runner.RunAll(tasks);
+        runner.runAll(tasks);
 
         System.out.printf("%s ran %d tasks\n", runner.getName(), runner.getCount());
         // END_MAIN OMIT
