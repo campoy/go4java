@@ -19,7 +19,7 @@ class Lambdas {
             };
         });
         // LAMBDA OMIT
-        runner.run(() ->System.out.println("or a lambda"));
+        runner.run(() ->System.out.println("a lambda expression"));
     }
 
     public static void main(String[] args) {

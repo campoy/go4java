@@ -1,4 +1,4 @@
-package main
+package go4java
 
 import (
 	"fmt"
@@ -13,6 +13,6 @@ func PrintHiTo(w MyWriter) {
 	fmt.Fprintf(w, "hi")
 }
 
-func main() {
+func ExamplePrintHiTo() {
 	PrintHiTo(os.Stdout)
 }

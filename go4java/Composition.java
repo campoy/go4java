@@ -38,7 +38,7 @@ class Composition {
 
     // START_COUNTING OMIT
     class CountingRunner {
-        private Runner runner;
+        private Runner runner; // HL
         private int count;
 
         public CountingRunner(String message) {
@@ -55,10 +55,14 @@ class Composition {
             count += tasks.length;
             runner.runAll(tasks);
         }
+        // BREAK_COUNTING OMIT
+        public int getCount() {
+            return count;
+        }
 
-        public int getCount() { return count; }
-
-        public String getName() { return runner.getName(); }
+        public String getName() {
+            return runner.getName();
+        }
     }
     // END_COUNTING OMIT
 

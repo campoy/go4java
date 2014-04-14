@@ -1,4 +1,4 @@
-package main
+package go4java
 
 import "fmt"
 
@@ -8,7 +8,7 @@ func adder(c int) func(int) int {
 	}
 }
 
-func main() {
+func ExampleAdder() {
 	// START OMIT
 	addTwo := adder(2)
 	for i := 0; i < 10; i++ {

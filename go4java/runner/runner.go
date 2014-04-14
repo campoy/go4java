@@ -1,13 +1,19 @@
-package main
+// Package runner provides a Runner type that is used to define both CountingRunner
+// and EmbeddedCountingRunner to show examples of how to use composition in Go.
+package runner
 
 import "fmt"
 
-// TASK OMIT
-type Task struct{ msg string }
+// A Task is a simple task that prints a message when run.
+type Task struct{ Msg string }
 
-func (t Task) Run() { fmt.Println("running", t.msg) }
+func (t Task) Run() {
+	fmt.Println("running", t.Msg)
+}
 
-// RUNNER OMIT
+// END_TASK OMIT
+
+// A Runner provides a way of running tasks.
 type Runner struct{ name string }
 
 func NewRunner(name string) *Runner { return &Runner{name} }
@@ -20,9 +26,11 @@ func (r *Runner) RunAll(ts []Task) {
 	}
 }
 
-// COUNTING OMIT
+// END_RUNNER OMIT
+
+// A CountingRunner is a Runner that keeps a counter of the run tasks.
 type CountingRunner struct {
-	runner *Runner // HL
+	runner *Runner
 	count  int
 }
 
@@ -43,11 +51,3 @@ func (r *CountingRunner) RunAll(ts []Task) {
 func (r *CountingRunner) Count() int { return r.count }
 
 func (r *CountingRunner) Name() string { return r.runner.Name() }
-
-// MAIN OMIT
-func main() {
-	r := NewCountingRunner("my runner")
-	tasks := []Task{{"one"}, {"two"}, {"three"}}
-	r.RunAll(tasks)
-	fmt.Printf("%s ran %d tasks\n", r.Name(), r.Count())
-}

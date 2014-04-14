@@ -1,4 +1,4 @@
-package main
+package go4java
 
 import "fmt"
 
@@ -11,7 +11,7 @@ type Employee struct {
 	EmployeeID int
 }
 
-func main() {
+func ExampleEmployee() {
 	var e Employee
 	e.Name = "Peter"
 	e.EmployeeID = 1234
