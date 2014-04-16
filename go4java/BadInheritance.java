@@ -41,10 +41,10 @@ class BadInheritance {
     // END_RUNNER OMIT
 
     // START_COUNTING OMIT
-    class CountingRunner extends Runner {
+    class RunCounter extends Runner {
         private int count;
 
-        public CountingRunner(String message) {
+        public RunCounter(String message) {
             super(message);
             this.count = 0;
         }
@@ -67,7 +67,7 @@ class BadInheritance {
 
     public void test() {
         // START_MAIN OMIT
-        CountingRunner runner = new CountingRunner("my runner");
+        RunCounter runner = new RunCounter("my runner");
 
         Task[] tasks = { new Task("one"), new Task("two"), new Task("three")};
         runner.runAll(tasks);

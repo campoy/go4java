@@ -1,25 +1,25 @@
 package runner
 
-// EmbeddingCountingRunner is completely equivalent to CountingRunner,
+// RunCounter2 is completely equivalent to RunCounter,
 // but uses struct embedding to avoid the boilerplate of redeclaring
 // the Name method.
-type EmbeddingCountingRunner struct {
+type RunCounter2 struct {
 	*Runner // HL
 	count   int
 }
 
-func NewEmbeddingCountingRunner(name string) *EmbeddingCountingRunner {
-	return &EmbeddingCountingRunner{NewRunner(name), 0}
+func NewRunCounter2(name string) *RunCounter2 {
+	return &RunCounter2{NewRunner(name), 0}
 }
 
-func (r *EmbeddingCountingRunner) Run(t Task) {
+func (r *RunCounter2) Run(t Task) {
 	r.count++
 	r.Runner.Run(t) // HL
 }
 
-func (r *EmbeddingCountingRunner) RunAll(ts []Task) {
+func (r *RunCounter2) RunAll(ts []Task) {
 	r.count += len(ts)
 	r.Runner.RunAll(ts) // HL
 }
 
-func (r *EmbeddingCountingRunner) Count() int { return r.count }
+func (r *RunCounter2) Count() int { return r.count }

@@ -6,8 +6,8 @@ import (
 	"github.com/campoy/go4java/go4java/runner"
 )
 
-func ExampleCountingRunner() {
-	r := runner.NewCountingRunner("my runner")
+func ExampleRunCounter() {
+	r := runner.NewRunCounter("my runner")
 	r.RunAll([]runner.Task{
 		{"one"},
 		{"two"},
@@ -21,8 +21,8 @@ func ExampleCountingRunner() {
 	// my runner ran 3 tasks
 }
 
-func ExampleEmbeddingCountingRunner() {
-	r := runner.NewEmbeddingCountingRunner("my runner")
+func ExampleRunCounter2() {
+	r := runner.NewRunCounter2("my runner")
 	r.RunAll([]runner.Task{
 		{"one"},
 		{"two"},

@@ -37,11 +37,11 @@ class Composition {
     }
 
     // START_COUNTING OMIT
-    class CountingRunner {
+    class RunCounter {
         private Runner runner; // HL
         private int count;
 
-        public CountingRunner(String message) {
+        public RunCounter(String message) {
             this.runner = new Runner(message);
             this.count = 0;
         }
@@ -68,7 +68,7 @@ class Composition {
 
     public void test() {
         // START_MAIN OMIT
-        CountingRunner runner = new CountingRunner("my runner");
+        RunCounter runner = new RunCounter("my runner");
 
         Task[] tasks = { new Task("one"), new Task("two"), new Task("three")};
         runner.runAll(tasks);

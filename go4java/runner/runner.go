@@ -1,5 +1,5 @@
-// Package runner provides a Runner type that is used to define both CountingRunner
-// and EmbeddedCountingRunner to show examples of how to use composition in Go.
+// Package runner provides a Runner type that is used to define both RunCounter
+// and EmbeddedRunCounter to show examples of how to use composition in Go.
 package runner
 
 import "fmt"
@@ -28,26 +28,26 @@ func (r *Runner) RunAll(ts []Task) {
 
 // END_RUNNER OMIT
 
-// A CountingRunner is a Runner that keeps a counter of the run tasks.
-type CountingRunner struct {
+// A RunCounter is a Runner that keeps a counter of the run tasks.
+type RunCounter struct {
 	runner *Runner
 	count  int
 }
 
-func NewCountingRunner(name string) *CountingRunner {
-	return &CountingRunner{runner: NewRunner(name)}
+func NewRunCounter(name string) *RunCounter {
+	return &RunCounter{runner: NewRunner(name)}
 }
 
-func (r *CountingRunner) Run(t Task) {
+func (r *RunCounter) Run(t Task) {
 	r.count++
 	r.runner.Run(t)
 }
 
-func (r *CountingRunner) RunAll(ts []Task) {
+func (r *RunCounter) RunAll(ts []Task) {
 	r.count += len(ts)
 	r.runner.RunAll(ts)
 }
 
-func (r *CountingRunner) Count() int { return r.count }
+func (r *RunCounter) Count() int { return r.count }
 
-func (r *CountingRunner) Name() string { return r.runner.Name() }
+func (r *RunCounter) Name() string { return r.runner.Name() }

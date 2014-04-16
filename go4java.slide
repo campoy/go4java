@@ -6,6 +6,46 @@ Gopher and Developer Advocate
 Google
 @francesc
 
+* What is Go?
+
+Go is a programming language
+
+- created at Google,
+- to solve Google scale problems.
+
+.image go4java/img/gopher.jpg 450 800
+
+* Who uses Go?
+
+It is currently by Google
+
+- YouTube (no gophers, no kittens!)
+- dl.google.com
+
+and many others
+
+- Docker
+- GitHub
+- Heroku
+- Tumblr
+- ...
+
+[[https://code.google.com/p/go-wiki/wiki/GoUsers][Longer list]]
+
+* Why Go?
+
+Simplicity
+
+Uniformity
+
+Readability
+
+Built-in concurrency features
+
+.image go4java/img/baby.jpg 300 300
+
+* Let's dive in
+
 * Go and Java common aspects
 
 Go and Java are
@@ -26,153 +66,279 @@ Go is Object Oriented, but doesn't have any of the keywords:
 - `extends`, or
 - `implements`.
 
-* Call by value, by reference, and pointers
+* All types are created equal
 
-* Q1: Are Java parameters passed by value or reference?
+* Kind of types
 
-Options:
+- primitive types
 
-a) everything is passed by reference.
+	int, uint, int8, uint8, ...
+	bool, string
+	float32, float64
+	complex64, complex128
 
-b) everything is passed by value.
+- structs
 
-c) objects by reference, others by value.
+	struct {
+		Name string
+		Age  int
+	}
 
-* Q2: Does Java have pointers?
+- slices and arrays
+	
+	[]int, [3]string, []struct{ Name string }
 
-Options:
+- maps
 
-a) No
+	map[string]int
 
-b) Nope
+* Kinds of types (continued)
 
-* a) everything is passed by reference?
+- pointers
 
-False!
+	*int, *Person
 
-.code go4java/ValueRef.java /doubleInt/,/$^/
+- functions
 
-At least primitive types are passed by value.
+	func(int, int) int
 
-* b) everything is passed by value?
+- channels
 
-Given the class `MyInteger`:
+	chan bool
 
-.code go4java/ValueRef.java /MyInteger/,/$^/
+- interfaces
 
-Objects are not passed by value, since they can be modified.
+	interface {
+		Start()
+		Stop()
+	}
 
-.code go4java/ValueRef.java /doubleMyInteger/,/$^/
+* Type declarations
 
-* c) objects by reference, others by value!
+	type [name] [definition]
 
-Well ... no!
+A type `Person` of kind `struct`.
 
-.code go4java/ValueRef.java /replaceMyInteger/,/$^/
+	type Person struct {
+		name string
+		age  int
+	}
 
-In Java everything is passed by value.
+But also a type `Celsius` of kind `float64`.
 
-Objects are references to values, copies refer to the same values.
+	type Celsius float64
 
-* What about Go?
+* Function declarations
 
-Go has pointers,
+	func [name] ([param]*) ([return]*)
 
-- but no pointer arithmetics.
+A sum function.
 
-Parameters are passed by value,
+	func sum(a, b int) int {
+		return a + b
+	}
 
-- and two copies of a pointer point to the same space in memory.
+A function with multiple returns.
 
-* Pointers on primitive types
+	func div(a, b int) (int, int)
+		return a / b, a % b
+	}
 
-Pointers allow the function to modify the original variable.
+Made clearer by naming the return values.
 
-.code go4java/valueref/valueref.go /func DoubleInt\(/
-.code go4java/valueref/valueref.go /func DoubleIntPtr/
+	func div(den, div int) (q, rem int)
+		return a / b, a % b
+	}
 
-.code go4java/valueref/valueref_test.go /:= 2/,/3:/
+* Method declarations
 
-* Other types
+	func ([receiver]) [name] ([param]*) ([return]*)
 
-Go doesn't have classes, but it has structs.
-
-.code go4java/valueref/valueref.go /struct/,/^}/
-
-And the same behavior applies.
-
-.code go4java/valueref/valueref.go /func DoubleMyInteger/
-.code go4java/valueref/valueref.go /func DoubleMyIntegerPtr/
-
-.code go4java/valueref/valueref_test.go /:= MyInteger/,/3:/
-
-* So
-
-Go has pointers and everything is passed by value.
-
-Just like Java!
-
-.image go4java/img/pointer.png
-
-* Declaring methods
-
-What we said about parameters also applies to method receivers.
-
-A method on `MyInteger` receives a copy:
-
-.code go4java/valueref/valueref.go /MyInteger\) Double\(\)/
-
-.code go4java/valueref/valueref_test.go /ExampleMyIntegerDouble/,/Println/
-
-A method on `*MyInteger` receives a copy of a pointer:
-
-.code go4java/valueref/valueref.go /MyInteger\) DoublePtr\(\)/
-
-.code go4java/valueref/valueref_test.go /ExampleMyIntegerDoublePtr/,/Println/
-
-* Declaring methods on other types
-
-We can define methods on any type declared on the same package.
-
-But we can define a new type `MyInt` based on `int`.
-
-.code go4java/valueref/valueref.go /type MyInt /
-
-And then define methods on both `MyInt`:
-
-.code go4java/valueref/valueref.go /MyInt\) Double/
-
-.code go4java/valueref/valueref_test.go /ExampleByIntDouble/,/Println/
-
-And `*MyInt`:
-
-.code go4java/valueref/valueref.go /MyInt\) DoublePtr/
-
-.code go4java/valueref/valueref_test.go /ExampleByIntDoublePtr/,/Println/
-
-* Declaring methods on nil pointers
-
-`String` returns a string with the description of the `Book`.
-
-.code go4java/books/books.go /type Book/,/^}/
-
-.code go4java/books/books.go /Book\) String/
-
-`Author` contains `First` and `Last` names, but `String` first checks if the receiver is nil.
-
-.code go4java/books/books.go /type Author/,/^}/
-
-.code go4java/books/books.go /Author\) String/,/^}/
-
-* Declaring methods on nil pointers (continued)
-
-With a non nil `Author`:
-
-.code go4java/books/books_test.go /potter := /,/by/
-
-With a nil `Author`:
-
-.code go4java/books/books_test.go /cool := /,/by/
+A method on a struct:
+
+	func (p Person) Major() bool {
+		return p.age > 18
+	}
+
+But also a method on a primitive type:
+
+	func (c Celsius) Freezing() bool {
+		return c <= 0
+	}
+
+_Constraint_
+
+Methods can be defined *only* on types declared in the same package.
+
+	// This won't compile
+	func (s string) Length() int { return len(s) }
+
+* Method declarations on pointers
+
+Pointers allow modifying the pointed receiver:
+
+	func (p *Person) IncAge() {
+		p.age++
+	}
+
+The method receiver is a copy of a pointer (pointing to the same address).
+
+A method on pointer can handle nil pointers gracefully.
+
+	func (p *Person) Name() string {
+		if p == nil {
+			return "anonymous"
+		}
+		return p.name
+	}
+
+#* Call by value, by reference, and pointers
+#
+#* Q1: Are Java parameters passed by value or reference?
+#
+#Options:
+#
+#a) everything is passed by reference.
+#
+#b) everything is passed by value.
+#
+#c) objects by reference, others by value.
+#
+#* Q2: Does Java have pointers?
+#
+#Options:
+#
+#a) No
+#
+#b) Nope
+#
+#* a) everything is passed by reference?
+#
+#False!
+#
+#.code go4java/ValueRef.java /doubleInt/,/$^/
+#
+#At least primitive types are passed by value.
+#
+#* b) everything is passed by value?
+#
+#Given the class `MyInteger`:
+#
+#.code go4java/ValueRef.java /MyInteger/,/$^/
+#
+#Objects are not passed by value, since they can be modified.
+#
+#.code go4java/ValueRef.java /doubleMyInteger/,/$^/
+#
+#* c) objects by reference, others by value!
+#
+#Well ... no!
+#
+#.code go4java/ValueRef.java /replaceMyInteger/,/$^/
+#
+#In Java everything is passed by value.
+#
+#Objects are references to values, copies refer to the same values.
+#
+#* What about Go?
+#
+#Go has pointers,
+#
+#- but no pointer arithmetics.
+#
+#Parameters are passed by value,
+#
+#- and two copies of a pointer point to the same space in memory.
+#
+#* Pointers on primitive types
+#
+#Pointers allow the function to modify the original variable.
+#
+#.code go4java/valueref/valueref.go /func DoubleInt\(/
+#.code go4java/valueref/valueref.go /func DoubleIntPtr/
+#
+#.code go4java/valueref/valueref_test.go /:= 2/,/3:/
+#
+#* Other types
+#
+#Go doesn't have classes, but it has structs.
+#
+#.code go4java/valueref/valueref.go /struct/,/^}/
+#
+#And the same behavior applies.
+#
+#.code go4java/valueref/valueref.go /func DoubleMyInteger/
+#.code go4java/valueref/valueref.go /func DoubleMyIntegerPtr/
+#
+#.code go4java/valueref/valueref_test.go /:= MyInteger/,/3:/
+#
+#* So
+#
+#Go has pointers and everything is passed by value.
+#
+#Just like Java!
+#
+#.image go4java/img/pointer.png
+#
+#* Declaring methods
+#
+#What we said about parameters also applies to method receivers.
+#
+#A method on `MyInteger` receives a copy:
+#
+#.code go4java/valueref/valueref.go /MyInteger\) Double\(\)/
+#
+#.code go4java/valueref/valueref_test.go /ExampleMyIntegerDouble/,/Println/
+#
+#A method on `*MyInteger` receives a copy of a pointer:
+#
+#.code go4java/valueref/valueref.go /MyInteger\) DoublePtr\(\)/
+#
+#.code go4java/valueref/valueref_test.go /ExampleMyIntegerDoublePtr/,/Println/
+#
+#* Declaring methods on other types
+#
+#We can define methods on any type declared on the same package.
+#
+#But we can define a new type `MyInt` based on `int`.
+#
+#.code go4java/valueref/valueref.go /type MyInt /
+#
+#And then define methods on both `MyInt`:
+#
+#.code go4java/valueref/valueref.go /MyInt\) Double/
+#
+#.code go4java/valueref/valueref_test.go /ExampleByIntDouble/,/Println/
+#
+#And `*MyInt`:
+#
+#.code go4java/valueref/valueref.go /MyInt\) DoublePtr/
+#
+#.code go4java/valueref/valueref_test.go /ExampleByIntDoublePtr/,/Println/
+
+#* Method declarations on pointers (continued)
+#
+#`String` returns a string with the description of the `Book`.
+#
+#.code go4java/books/books.go /type Book/,/^}/
+#
+#.code go4java/books/books.go /Book\) String/
+#
+#`Author` contains `First` and `Last` names, but `String` first checks if the receiver is nil.
+#
+#.code go4java/books/books.go /type Author/,/^}/
+#
+#.code go4java/books/books.go /Author\) String/,/^}/
+#
+#* Method declarations on pointers (continued)
+#
+#With a non nil `Author`:
+#
+#.code go4java/books/books_test.go /potter := /,/by/
+#
+#With a nil `Author`:
+#
+#.code go4java/books/books_test.go /cool := /,/by/
 
 * Interfaces
 
@@ -202,7 +368,7 @@ Go interfaces are satisfied *implicitly*.
 
 .image go4java/img/satisfaction.jpg 400 600
 
-* Java: explicit satisfaction = "implements"
+* Java: explicit satisfaction
 
 `printHiTo` needs an object with the method `void`print(String)`
 
@@ -256,35 +422,103 @@ Boilerplate to create the class, but calls are short.
 
 .code go4java/InterfaceSat.java /new MyStringPrinter/
 
-* Go: implicit satisfaction = no "implements"
+* Go: implicit satisfaction
 
-If a type defines all the methods of an interface, the type satisfies that interface.
+_If_a_type_defines_all_the_methods_of_an_interface,_the_type_satisfies_that_interface._
 
-.code go4java/interfaces.go /Writer/,/^}/
+From the package `io`
 
-.code go4java/interfaces.go /PrintHiTo/,/^}/
+	type Writer interface {
+		Write([]byte) (int, error)
+	}
 
-`os.Stdout` is a `*os.File`, which defines `Write` among other methods.
+The package `fmt` depends on `io`
+
+	func Fprint(w io.Writer, a ...interface{}) (int, error)
+
+* Go: implicit satisfaction (continued)
+
+Package `os` provides `os.Stdout`, of type `*os.File`.
+
+A method `Write` is defined on `*os.File`
 
 	func (f *File) Write(b []byte) (n int, err error)
 
-* Go: implicit satisfaction = no "implements"
+Therefore `*os.File` is a `io.Writer` and can be used with `fmt.Fprint`
 
-Since
+No dependency between `os` and `io` or `fmt`.
 
-- `*os.File` has all the methods that `MyWriter` requires
+* FuncDraw: another example on interfaces
 
-we know that
+.image go4java/img/funcdraw.png 500 700
 
-- `*os.File` is a `MyWriter`.
+* FuncDraw: package parse
 
-Therefore we can simply write:
+Package `parse` provides a parser of strings into an evaluable function.
 
-.code go4java/interfaces.go /os.Stdout/
+	func Parse(text string) (*ParsedFunc, error) { ... }
 
-This is named *structural*subtyping*.
+ParsedFunc is a concrete type.
 
-Think duck typing checked at compilation time.
+	type ParsedFunc struct { ... }
+
+	func (p *ParsedFunc) Eval(x float64) float64 { ... }
+
+* FuncDraw: package draw
+
+Package draw generates images given an evaluable function.
+
+	func Draw(f *parser.ParsedFunc) image.Image {
+		for x := start; x < end; x += inc {
+			y := f.Eval(x)
+			...
+		}
+	}
+
+`draw` depends on `parse`
+
+- makes testing hard
+
+Let's use an interface instead
+
+	type Evaluable interface {
+		Eval(float64) float64
+	}
+
+	func Draw(f Evaluable) image.Image { ... }
+
+* FuncDraw: we're done!
+
+`draw` and `parse` work together but don't have any dependency
+
+* Making test easy
+
+Similar to dependency injection for testing.
+
+.code go4java/storage/storage.go /Storage/,/var/
+
+We use an interface to store a service.
+
+.code go4java/storage/storage.go /Increment/,/^}/
+
+* Making test easy
+
+Go provides a built-in unit testing framework.
+
+The production code is in `storage.go`, the test code in `storage_test.go`.
+
+But all the code belongs to the same package.
+
+.code go4java/storage/storage_test.go /TestIncrement/,/Get/
+	...
+
+* Making test easy
+
+The code in `*_test.go` files is compiled *only* when testing.
+
+We can replace the normal `Storage` with a `fakeStorage` implemented with a map.
+
+.code go4java/storage/storage_test.go /init/,/TEST/
 
 * Inheritance vs composition
 
@@ -304,7 +538,7 @@ Lets see why.
 
 .code go4java/BadInheritance.java /START_RUNNER/,/END_RUNNER/
 
-* CountingRunner is-a Runner that counts
+* RunCounter is-a Runner that counts
 
 .code go4java/BadInheritance.java /START_COUNTING/,/END_COUNTING/
 
@@ -331,11 +565,13 @@ Inheritance causes:
 - tightly coupling,
 - surprising bugs.
 
-.image go4java/img/countingrunner.png
+.image go4java/img/badinheritance.png
 
 * Solution: use composition
 
 .code go4java/Composition.java /START_COUNTING/,/BREAK_COUNTING/
+
+and then ...
 
 * Solution: use composition (continued)
 
@@ -346,12 +582,12 @@ Inheritance causes:
 *Pros*
 
 - The bug is gone!
-- `Runner` is completely independent of `CountingRunner`.
+- `Runner` is completely independent of `RunCounter`.
 - The creation of the `Runner` can be delayed until (and if) needed.
 
 *Cons*
 
-- Composition doesn't define any methods on `CountingRunner`:
+- Composition doesn't define any methods on `RunCounter`:
 
 	public String getName() { return runner.getName(); }
 
@@ -369,11 +605,11 @@ Let's use composition directly:
 
 .code go4java/runner/runner.go /type Runner/,/END_RUNNER/
 
-* CountingRunner
+* RunCounter
 
-`CountingRunner` has a `Runner` field.
+`RunCounter` has a `Runner` field.
 
-.code go4java/runner/runner.go /type CountingRunner/,
+.code go4java/runner/runner.go /type RunCounter/,
 
 * Composition in Go
 
@@ -409,78 +645,239 @@ All fields and methods from `Person` are available on `Employee`:
 
 * Struct embedding
 
-.code go4java/runner/embed.go /type EmbeddingCountingRunner/,
+.code go4java/runner/embed.go /type RunCounter2/,
 
 * Is struct embedding like inheritance?
 
 No, it's better!
 
-- It is composition
-- Struct embedding of interfaces exports only a set of the methods of the embedded value.
+- It is composition.
+- It is more general.
 
-TODO: find example, compare to Java hiding inherited methods (private inheritance)
+* Is struct embedding like inheritance? (continued)
 
-* Lambdas
+Inheritance exports ALL methods of the inherited type.
 
-* Improving Runner
+Struct embedding exports all the methods of the embedded field.
 
-We could make our `Runner` example more generic using interfaces.
+	// MyFile defines all the methods of os.File
+	type MyFile struct {
+		*os.File
+	}
 
-.code go4java/Lambdas.java /START/,/END/
+Then we can create a `MyFile` with a `*os.File`.
 
-And then call `run` with an anonymous interface.
+	f, err := os.Open("/tmp/foo.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
 
-.code go4java/Lambdas.java /ANONYMOUS/,/LAMBDA/
+	myFile := MyFile{f}
+	...
 
-* Lambdas
+* Is struct embedding like inheritance? (continued)
 
-Lambda expressions let you express instances of single-method classes more compactly
+If the embedded field is of type interface its value can be of any type satisfying the interface.
 
-- Lambda expressions generate interface instances.
-- They have a better syntax than anonymous interfaces.
+	// MyReader defines all the methods of os.File
+	type MyReader struct {
+		io.Reader
+	}
 
-The code:
+Then we can create a `MyReader` with a `*os.File`, since it satisfies `io.Reader`.
 
-.code go4java/Lambdas.java /new Task/,/LAMBDA/
+	f, err := os.Open("/tmp/foo.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
 
-is equivalent to:
+	myReader = MyReader{f}
+	...
 
-.code go4java/Lambdas.java /lambda/
+* Back to testing
 
-* Lambdas in Go: function values
+What if we wanted to fake a part of a `net.Conn`?
 
-Functions are first class citizens in Go.
+	type Conn interface {
+	        Read(b []byte) (n int, err error)
+	        Write(b []byte) (n int, err error)
+	        Close() error
+	        LocalAddr() Addr
+	        RemoteAddr() Addr
+	        SetDeadline(t time.Time) error
+	        SetReadDeadline(t time.Time) error
+	        SetWriteDeadline(t time.Time) error
+	}
 
-Variables can hold functions:
+I want to test my code using a `net.Conn`, faking only `Read` and `Write`.
 
-	sum := func(x, y int) int { return x + y }
+- We could create a `fakeConn` and define all the methods of `Conn` on it.
 
-Functions can return functions:
+- But that's a lot of boring code.
 
-.code go4java/funcs.go /adder/,/^}/
+* Struct embedding of interfaces
 
-Functions all around:
+_WARNING_:_Cool_stuff_
 
-.code go4java/funcs.go /START/,/END/
+If a type T has an embedded field of a type E, all the methods of E will be defined on T.
 
-* Lambdas in Go: function values
+Therefore, if E is an interface T satisfies E.
 
-`Runner` now runs functions of type `func()`.
+* Struct embedding of interfaces (continued)
 
-.code go4java/taskrunner/taskrunner.go /func.*Runner\) Run/,/^}/
+Very easy using struct embedding!
 
-We can call `Run` with a literal function.
+	type fakeConn struct {
+		net.Conn
+		buff bytes.Buffer
+	}
 
-.code go4java/taskrunner/taskrunner_test.go /NewRunner/,/Println/
+Any calls to the methods of `net.Conn` will fail, since the field is nil.
 
-* Lambdas in Go: method values
+We redefine the operations we support:
 
-Or using the `Task` type we defined before:
+	func (c *fakeConn) Read(b []byte) (int, error) {
+		return c.buff.Read(b)
+	}
 
-.code go4java/taskrunner/taskrunner.go /type Task/,
+	func (c *fakeConn) Write(b []byte) (int, error) {
+		return c.buff.Write(b)
+	}
 
-`t.Run` is a method value of type `func()`.
-
-.code go4java/taskrunner/taskrunner_test.go /method/,/t.Run/
+#* Lambdas
+#
+#* Improving Runner
+#
+#We could make our `Runner` example more generic using interfaces.
+#
+#.code go4java/Lambdas.java /START/,/END/
+#
+#And then call `run` with an anonymous interface.
+#
+#.code go4java/Lambdas.java /ANONYMOUS/,/LAMBDA/
+#
+#* Lambdas
+#
+#Lambda expressions let you express instances of single-method classes more compactly
+#
+#- Lambda expressions generate interface instances.
+#- They have a better syntax than anonymous interfaces.
+#
+#The code:
+#
+#.code go4java/Lambdas.java /new Task/,/LAMBDA/
+#
+#is equivalent to:
+#
+#.code go4java/Lambdas.java /lambda/
+#
+#* Lambdas in Go: function values
+#
+#Functions are first class citizens in Go.
+#
+#Variables can hold functions:
+#
+#	sum := func(x, y int) int { return x + y }
+#
+#Functions can return functions:
+#
+#.code go4java/funcs.go /adder/,/^}/
+#
+#Functions all around:
+#
+#.code go4java/funcs.go /START/,/END/
+#
+#* Lambdas in Go: function values
+#
+#`Runner` now runs functions of type `func()`.
+#
+#.code go4java/taskrunner/taskrunner.go /func.*Runner\) Run/,/^}/
+#
+#We can call `Run` with a literal function.
+#
+#.code go4java/taskrunner/taskrunner_test.go /NewRunner/,/Println/
+#
+#* Lambdas in Go: method values
+#
+#Or using the `Task` type we defined before:
+#
+#.code go4java/taskrunner/taskrunner.go /type Task/,
+#
+#`t.Run` is a method value of type `func()`.
+#
+#.code go4java/taskrunner/taskrunner_test.go /method/,/t.Run/
 
 * Concurrency
+
+* Concurrency
+
+It is part of the language, not a library.
+
+Based on two concepts:
+
+- goroutines: very light threads
+- channels: typed pipes used to communicate and synchronize between goroutines
+
+Very lightweight, you should use them often!
+
+.image go4java/img/funnelin.jpg 300 700
+
+* Sleep and talk
+
+.code go4java/conc1.go /sleepAndTalk/,/^}/
+
+We want a message per second.
+
+.play go4java/conc1.go /func main/,/^}/
+
+What if we started all the `sleepAndTalk` concurrently?
+
+Just add `go`!
+
+* Concurrent sleep and talk
+
+.play go4java/conc2.go /func main/,/^}/
+
+That was fast ...
+
+When the `main` goroutine ends, the program ends.
+
+* Concurrent sleep and talk with more sleeping
+
+.play go4java/conc3.go /func main/,/^}/
+
+But synchronizing with `Sleep` is a pretty bad idea.
+
+* Communicating through channels
+
+`sleepAndTalk` sends the string into the channel instead of printing it.
+
+.code go4java/chan.go /sleepAndTalk/,/^}/
+
+We create the channel and pass it to `sleepAndTalk`, then wait for the values to be sent.
+
+.play go4java/chan.go /func main/,/^}/
+
+* Concurrency is very powerful
+
+And there's lots to learn!
+
+- [[http://talks.golang.org/2012/concurrency.slide#1][Go Concurrency Patterns]], by Rob Pike
+- [[http://talks.golang.org/2013/advconc.slide#1][Advanced Concurrency Patterns]], by Sameer Ajmani
+- [[http://talks.golang.org/2012/waza.slide#1][Concurrency is not Parellelism]], by Rob Pike
+
+.image go4java/img/busy.jpg
+
+* Cool stuff I didn't have time to mention
+
+Functions as values, functions that return functions, etc.
+
+* What to do next?
+
+Learn Go on your browser with [[http://tour.golang.org][tour.golang.org]]
+
+Find more about Go on [[http://golang.org][golang.org]]
+
+Join the community at [[https://groups.google.com/forum/#!forum/Golang-nuts][golang-nuts]]
