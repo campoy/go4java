@@ -244,7 +244,7 @@ A method on pointer can handle nil pointers gracefully.
 #
 #Go has pointers,
 #
-#- but no pointer arithmetics.
+#- but no pointer arithmetic.
 #
 #Parameters are passed by value,
 #
@@ -870,9 +870,26 @@ And there's lots to learn!
 
 .image go4java/img/busy.jpg
 
-* Cool stuff I didn't have time to mention
+* In conclusion
 
-Functions as values, functions that return functions, etc.
+Go is simple, consistent, readable, and fun.
+
+All types are equal
+
+- methods on any type
+
+Implicit interfaces
+
+- Structural typing
+- Less dependencies
+- Code testable and reusable
+
+Use composition instead of inheritance
+
+- Struct embedding to remove boilerplate.
+- Struct embedding of interfaces to satisfy them fast.
+
+Concurrency is awesome, and you should check it out.
 
 * What to do next?
 

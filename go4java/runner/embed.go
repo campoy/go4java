@@ -4,12 +4,12 @@ package runner
 // but uses struct embedding to avoid the boilerplate of redeclaring
 // the Name method.
 type RunCounter2 struct {
-	*Runner // HL
-	count   int
+	Runner // HL
+	count  int
 }
 
 func NewRunCounter2(name string) *RunCounter2 {
-	return &RunCounter2{NewRunner(name), 0}
+	return &RunCounter2{Runner{name}, 0}
 }
 
 func (r *RunCounter2) Run(t Task) {

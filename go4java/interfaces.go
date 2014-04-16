@@ -1,4 +1,4 @@
-package go4java
+package main
 
 import (
 	"fmt"

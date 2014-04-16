@@ -16,9 +16,8 @@ func (t Task) Run() {
 // A Runner provides a way of running tasks.
 type Runner struct{ name string }
 
-func NewRunner(name string) *Runner { return &Runner{name} }
-func (r *Runner) Name() string      { return r.name }
-func (r *Runner) Run(t Task)        { t.Run() }
+func (r *Runner) Name() string { return r.name }
+func (r *Runner) Run(t Task)   { t.Run() }
 
 func (r *Runner) RunAll(ts []Task) {
 	for _, t := range ts {
@@ -30,12 +29,12 @@ func (r *Runner) RunAll(ts []Task) {
 
 // A RunCounter is a Runner that keeps a counter of the run tasks.
 type RunCounter struct {
-	runner *Runner
+	runner Runner
 	count  int
 }
 
 func NewRunCounter(name string) *RunCounter {
-	return &RunCounter{runner: NewRunner(name)}
+	return &RunCounter{runner: Runner{name}}
 }
 
 func (r *RunCounter) Run(t Task) {
