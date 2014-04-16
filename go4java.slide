@@ -36,9 +36,11 @@ and many others
 
 Simplicity
 
-Uniformity
+Consistency
 
 Readability
+
+Safety
 
 Built-in concurrency features
 
@@ -562,7 +564,7 @@ Wait! How many?
 Inheritance causes:
 
 - weak encapsulation,
-- tightly coupling,
+- tight coupling,
 - surprising bugs.
 
 .image go4java/img/badinheritance.png
