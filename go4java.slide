@@ -5,6 +5,7 @@ Francesc Campoy
 Gopher and Developer Advocate
 Google
 @francesc
+campoy@golang.org
 
 * What is Go?
 
@@ -950,7 +951,7 @@ We create the channel and pass it to `sleepAndTalk`, then wait for the values to
 #
 #[[http://localhost:8080/next]]
 
-* Let's count better
+* Let's count on the web
 
 We receive the next id from a channel.
 
@@ -1017,3 +1018,5 @@ Learn Go on your browser with [[http://tour.golang.org][tour.golang.org]]
 Find more about Go on [[http://golang.org][golang.org]]
 
 Join the community at [[https://groups.google.com/forum/#!forum/Golang-nuts][golang-nuts]]
+
+Link to the slides [[http://campoy.cat/go4java][campoy.cat/go4java]]
