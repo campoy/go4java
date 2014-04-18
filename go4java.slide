@@ -1,4 +1,4 @@
-Go for Javaneros
+Go for Javaneros (Javaïstes?)
  #go4java
 
 Francesc Campoy
@@ -32,19 +32,48 @@ and many others
 
 [[https://code.google.com/p/go-wiki/wiki/GoUsers][Longer list]]
 
+* Who uses Go?
+
+.image go4java/img/trends.png 500 900
+
 * Why Go?
 
-Simplicity
+* Simplicity
 
-Consistency
+Simple specification
 
-Readability
+.image go4java/img/perfection.jpg
 
-Safety
+* Consistency
 
-Built-in concurrency features
+Orthogonal features
 
-.image go4java/img/baby.jpg 300 300
+.image go4java/img/lego.jpg
+
+* Readability
+
+“The ratio of time spent reading (code) versus writing is well over 10 to 1 ... (therefore) making it easy to read makes it easier to write.”
+― Robert C. Martin
+
+.image go4java/img/piet.png 500 600 
+
+* Safety
+
+Type safety, no buffer overflows, no pointer arithmetic.
+
+.image go4java/img/baby.jpg 500 500
+
+* Built-in concurrency features
+
+“In a concurrent world, imperative is the wrong default!” - Tim Sweeney
+
+Concurrent Sequential Processes - Hoare (1978)
+
+.image go4java/img/conc.jpg 400 1000 
+
+* Speed
+
+.image go4java/img/fast.jpg 500 500
 
 * Let's dive in
 
@@ -159,7 +188,7 @@ Made clearer by naming the return values.
 A method on a struct:
 
 	func (p Person) Major() bool {
-		return p.age > 18
+		return p.age >= 18
 	}
 
 But also a method on a primitive type:
@@ -174,6 +203,30 @@ Methods can be defined *only* on types declared in the same package.
 
 	// This won't compile
 	func (s string) Length() int { return len(s) }
+
+* Wait, pointers?
+
+Use `&` to obtain the address of a variable.
+
+	a := "hello"
+	p := &a
+
+Use `*` to redeference the pointer.
+
+	fmt.Print(*p + ", world")
+
+No pointer arithmetic, no pointers to the unknown.
+
+	a := "hello"
+	p := &a
+
+	p += 4  // no, you can't
+
+* Why pointers?
+
+Control what you pass to functions.
+
+Control your memory layout.
 
 * Method declarations on pointers
 
@@ -370,85 +423,95 @@ Go interfaces are satisfied *implicitly*.
 
 .image go4java/img/satisfaction.jpg 400 600
 
-* Java: explicit satisfaction
-
-`printHiTo` needs an object with the method `void`print(String)`
-
-.code go4java/InterfaceSat.java /START_PRINT_TO/,/END_PRINT_TO/
-
-`System.out` has that method, let's use it!
-
-.code go4java/InterfaceSat.java /START_BAD/,/END_BAD/
-
-Fails with:
-
-	error: incompatible types: PrintStream cannot be converted to StringPrinter
-	    static StringPrinter sp = System.out;
-
-* Solution #1
-
-Approach: 
-
-- Modify `PrintStream` in the Java standard library.
-- Add `implements StringPrinter`.
-
-	class PrintStream implements Closeable, Flushable, Appendable, AutoCloseable, StringPrinter
-
-Result:
-
-- Shame and dependencies.
-
-* Solution #2
-
-Approach:
-
-- Create an anonymous class implementing `StringPrinter`
-
-Result:
-
-Boilerplate in every call.
-
-.code go4java/InterfaceSat.java /new StringPrinter/,/\}\)/
-
-* Solution #3
-
-Approach:
-
-- Add a new class that implements `StringPrinter` given a `PrinterStream`
-
-.code go4java/InterfaceSat.java /START_MyStringPrinter/,/END_MyStringPrinter/
-
-Result:
-
-Boilerplate to create the class, but calls are short.
-
-.code go4java/InterfaceSat.java /new MyStringPrinter/
+#* Java: explicit satisfaction
+#
+#`printHiTo` needs an object with the method `void`print(String)`
+#
+#.code go4java/InterfaceSat.java /START_PRINT_TO/,/END_PRINT_TO/
+#
+#`System.out` has that method, let's use it!
+#
+#.code go4java/InterfaceSat.java /START_BAD/,/END_BAD/
+#
+#Fails with:
+#
+#	error: incompatible types: PrintStream cannot be converted to StringPrinter
+#	    static StringPrinter sp = System.out;
+#
+#* Solution #1
+#
+#Approach: 
+#
+#- Modify `PrintStream` in the Java standard library.
+#- Add `implements StringPrinter`.
+#
+#	class PrintStream implements Closeable, Flushable, Appendable, AutoCloseable, StringPrinter
+#
+#Result:
+#
+#- Shame and dependencies.
+#
+#* Solution #2
+#
+#Approach:
+#
+#- Create an anonymous class implementing `StringPrinter`
+#
+#Result:
+#
+#Boilerplate in every call.
+#
+#.code go4java/InterfaceSat.java /new StringPrinter/,/\}\)/
+#
+#* Solution #3
+#
+#Approach:
+#
+#- Add a new class that implements `StringPrinter` given a `PrinterStream`
+#
+#.code go4java/InterfaceSat.java /START_MyStringPrinter/,/END_MyStringPrinter/
+#
+#Result:
+#
+#Boilerplate to create the class, but calls are short.
+#
+#.code go4java/InterfaceSat.java /new MyStringPrinter/
 
 * Go: implicit satisfaction
 
 _If_a_type_defines_all_the_methods_of_an_interface,_the_type_satisfies_that_interface._
 
-From the package `io`
+- less dependencies
+- no type hierarchy
+- composition is organic
 
-	type Writer interface {
-		Write([]byte) (int, error)
-	}
+* Structural subtyping
 
-The package `fmt` depends on `io`
+Think compile time checked duck typing.
 
-	func Fprint(w io.Writer, a ...interface{}) (int, error)
+.image go4java/img/duck.jpg 500 500
 
-* Go: implicit satisfaction (continued)
-
-Package `os` provides `os.Stdout`, of type `*os.File`.
-
-A method `Write` is defined on `*os.File`
-
-	func (f *File) Write(b []byte) (n int, err error)
-
-Therefore `*os.File` is a `io.Writer` and can be used with `fmt.Fprint`
-
-No dependency between `os` and `io` or `fmt`.
+#From the package `io`
+#
+#	type Writer interface {
+#		Write([]byte) (int, error)
+#	}
+#
+#The package `fmt` depends on `io`
+#
+#	func Fprint(w io.Writer, a ...interface{}) (int, error)
+#
+#* Go: implicit satisfaction (continued)
+#
+#Package `os` provides `os.Stdout`, of type `*os.File`.
+#
+#A method `Write` is defined on `*os.File`
+#
+#	func (f *File) Write(b []byte) (n int, err error)
+#
+#Therefore `*os.File` is a `io.Writer` and can be used with `fmt.Fprint`
+#
+#No dependency between `os` and `io` or `fmt`.
 
 * FuncDraw: another example on interfaces
 
@@ -489,38 +552,34 @@ Let's use an interface instead
 
 	func Draw(f Evaluable) image.Image { ... }
 
-* FuncDraw: we're done!
-
-`draw` and `parse` work together but don't have any dependency
-
-* Making test easy
-
-Similar to dependency injection for testing.
-
-.code go4java/storage/storage.go /Storage/,/var/
-
-We use an interface to store a service.
-
-.code go4java/storage/storage.go /Increment/,/^}/
-
-* Making test easy
-
-Go provides a built-in unit testing framework.
-
-The production code is in `storage.go`, the test code in `storage_test.go`.
-
-But all the code belongs to the same package.
-
-.code go4java/storage/storage_test.go /TestIncrement/,/Get/
-	...
-
-* Making test easy
-
-The code in `*_test.go` files is compiled *only* when testing.
-
-We can replace the normal `Storage` with a `fakeStorage` implemented with a map.
-
-.code go4java/storage/storage_test.go /init/,/TEST/
+#* Testing the easy way
+#
+#Similar to dependency injection for testing.
+#
+#.code go4java/storage/storage.go /Storage/,/var/
+#
+#We use an interface to store a service.
+#
+#.code go4java/storage/storage.go /Increment/,/^}/
+#
+#* Testing the easy way
+#
+#Go provides a built-in unit testing framework.
+#
+#The production code is in `storage.go`, the test code in `storage_test.go`.
+#
+#But all the code belongs to the same package.
+#
+#.code go4java/storage/storage_test.go /TestIncrement/,/Get/
+#	...
+#
+#* Testing the easy way
+#
+#The code in `*_test.go` files is compiled *only* when testing.
+#
+#We can replace the normal `Storage` with a `fakeStorage` implemented with a map.
+#
+#.code go4java/storage/storage_test.go /init/,/TEST/
 
 * Inheritance vs composition
 
@@ -532,9 +591,9 @@ In general, composition is preferred to inheritance.
 
 Lets see why.
 
-* Task
+# * Task
 
-.code go4java/BadInheritance.java /START_TASK/,/END_TASK/
+# .code go4java/BadInheritance.java /START_TASK/,/END_TASK/
 
 * Runner
 
@@ -601,11 +660,11 @@ and then ...
 
 Let's use composition directly:
 
-.code go4java/runner/runner.go /type Task/,/END_TASK/
-
-`Task` and `Runner` are very similar to the Java version.
+# .code go4java/runner/runner.go /type Task/,/END_TASK/
 
 .code go4java/runner/runner.go /type Runner/,/END_RUNNER/
+
+All very similar to the Java version.
 
 * RunCounter
 
@@ -629,7 +688,7 @@ Materialized as unnamed fields in a struct.
 
 It is still *composition*.
 
-The methods of the embedded type become methods of the embedding type.
+The fields and methods of the embedded type adopted by the embedding type.
 
 * Example of struct embedding
 
@@ -651,54 +710,77 @@ All fields and methods from `Person` are available on `Employee`:
 
 * Is struct embedding like inheritance?
 
-No, it's better!
+No, it is better!
 
 - It is composition.
 - It is more general.
 
-* Is struct embedding like inheritance? (continued)
+* Is struct embedding like inheritance?
 
-Inheritance exports ALL methods of the inherited type.
+Struct embedding is selective.
 
-Struct embedding exports all the methods of the embedded field.
-
-	// MyFile defines all the methods of os.File
-	type MyFile struct {
-		*os.File
+	// WriteCounter counts how many times `Write` is called
+	type WriteCounter struct {
+		io.ReadWriteCloser
+		count int
 	}
 
-Then we can create a `MyFile` with a `*os.File`.
-
-	f, err := os.Open("/tmp/foo.txt")
-	if err != nil {
-		log.Fatal(err)
+	func (w WriteCounter) Write(b []byte) (int, error) {
+		count++
+		return w.ReadWriteCloser.Write(b)
 	}
-	defer f.Close()
 
-	myFile := MyFile{f}
+WriteCounter can be used with any io.ReadWriteCloser.
+
+	os.File
+	net.Conn
+	websocket.Conn
 	...
 
-* Is struct embedding like inheritance? (continued)
+##
+#* Is struct embedding like inheritance? (continued)
+#
+#Inheritance exports ALL methods of the inherited type.
+#
+#Struct embedding exports all the methods of the embedded field.
+#
+#	// MyFile defines all the methods of os.File
+#	type MyFile struct {
+#		*os.File
+#	}
+#
+#Then we can create a `MyFile` with a `*os.File`.
+#
+#	f, err := os.Open("/tmp/foo.txt")
+#	if err != nil {
+#		log.Fatal(err)
+#	}
+#	defer f.Close()
+#
+#	myFile := MyFile{f}
+#	...
+#
+#* Is struct embedding like inheritance? (continued)
+#
+#If the embedded field is of type interface its value can be of any type satisfying the interface.
+#
+#	// MyReader defines all the methods of os.File
+#	type MyReader struct {
+#		io.Reader
+#	}
+#
+#Then we can create a `MyReader` with a `*os.File`, since it satisfies `io.Reader`.
+#
+#	f, err := os.Open("/tmp/foo.txt")
+#	if err != nil {
+#		log.Fatal(err)
+#	}
+#	defer f.Close()
+#
+#	myReader = MyReader{f}
+#	...
 
-If the embedded field is of type interface its value can be of any type satisfying the interface.
-
-	// MyReader defines all the methods of os.File
-	type MyReader struct {
-		io.Reader
-	}
-
-Then we can create a `MyReader` with a `*os.File`, since it satisfies `io.Reader`.
-
-	f, err := os.Open("/tmp/foo.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	myReader = MyReader{f}
-	...
-
-* Back to testing
+* Easy mocking
 
 What if we wanted to fake a part of a `net.Conn`?
 
@@ -861,6 +943,41 @@ But synchronizing with `Sleep` is a pretty bad idea.
 We create the channel and pass it to `sleepAndTalk`, then wait for the values to be sent.
 
 .play go4java/chan.go /func main/,/^}/
+
+#* Let's count on the web
+#
+#.play go4java/counter.go
+#
+#[[http://localhost:8080/next]]
+
+* Let's count better
+
+We receive the next id from a channel.
+
+.code go4java/goodcounter.go /nextID/,/^}/
+
+We need a goroutine sending ids into the channel.
+
+.play go4java/goodcounter.go /func main/,/^}/
+
+[[http://localhost:8080/next]]
+
+* Let's fight!
+
+`select` allows us to chose among multiple channel operations.
+
+.play go4java/battle.go /battle/,/^}/
+
+Go - [[http://localhost:8080/fight?usr=go]]
+Java - [[http://localhost:8080/fight?usr=java]]
+
+* Ok, I'm just bragging here
+
+.image go4java/img/chain.jpg
+
+* Ok, I'm just bragging here
+
+.play go4java/goroutines.go /func f/,
 
 * Concurrency is very powerful
 

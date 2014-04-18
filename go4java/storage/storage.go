@@ -7,9 +7,9 @@ type Storage interface {
 	Put(key string, value interface{}) error
 }
 
-var storage Storage = newMemcacheStorage("/tmp")
+var storage Storage = newMemcacheStorage()
 
-func newMemcacheStorage(path string) Storage {
+func newMemcacheStorage() Storage {
 	return nil
 }
 

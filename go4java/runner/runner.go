@@ -17,7 +17,10 @@ func (t Task) Run() {
 type Runner struct{ name string }
 
 func (r *Runner) Name() string { return r.name }
-func (r *Runner) Run(t Task)   { t.Run() }
+
+func (r *Runner) Run(t Task) {
+	t.Run()
+}
 
 func (r *Runner) RunAll(ts []Task) {
 	for _, t := range ts {
@@ -29,7 +32,7 @@ func (r *Runner) RunAll(ts []Task) {
 
 // A RunCounter is a Runner that keeps a counter of the run tasks.
 type RunCounter struct {
-	runner Runner
+	runner Runner // HL
 	count  int
 }
 
@@ -39,12 +42,12 @@ func NewRunCounter(name string) *RunCounter {
 
 func (r *RunCounter) Run(t Task) {
 	r.count++
-	r.runner.Run(t)
+	r.runner.Run(t) // HL
 }
 
 func (r *RunCounter) RunAll(ts []Task) {
 	r.count += len(ts)
-	r.runner.RunAll(ts)
+	r.runner.RunAll(ts) // HL
 }
 
 func (r *RunCounter) Count() int { return r.count }
