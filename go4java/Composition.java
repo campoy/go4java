@@ -55,6 +55,9 @@ class Composition {
             count += tasks.length;
             runner.runAll(tasks);
         }
+
+        // continued on next slide ...
+
         // BREAK_COUNTING OMIT
         public int getCount() {
             return count;

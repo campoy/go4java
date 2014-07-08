@@ -5,14 +5,14 @@ import (
 	"time"
 )
 
-func sleepAndTalk(secs time.Duration, msg string) {
-	time.Sleep(secs * time.Second)
+func sleepAndTalk(t time.Duration, msg string) {
+	time.Sleep(t)
 	fmt.Printf("%v ", msg)
 }
 
 func main() {
-	sleepAndTalk(0, "Hello")
-	sleepAndTalk(1, "DevOxx!")
-	sleepAndTalk(2, "What's")
-	sleepAndTalk(3, "up?")
+	sleepAndTalk(0*time.Second, "Hello")
+	sleepAndTalk(1*time.Second, "Gophers!")
+	sleepAndTalk(2*time.Second, "What's")
+	sleepAndTalk(3*time.Second, "up?")
 }
