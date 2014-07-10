@@ -36,7 +36,8 @@ Others:
 
 * Who uses Go?
 
-.iframe go4java/usage.html 600 1200 
+.iframe http://www.google.com/trends/fetchComponent?hl=en-US&q=golang&content=1&cid=TIMESERIES_GRAPH_0&export=5&w=800&h=600 600 800
+ 600 1200 
 
 * Why Go?
 
