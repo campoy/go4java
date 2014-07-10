@@ -36,8 +36,7 @@ Others:
 
 * Who uses Go?
 
-.iframe http://www.google.com/trends/fetchComponent?hl=en-US&q=golang&content=1&cid=TIMESERIES_GRAPH_0&export=5&w=800&h=600 600 800
- 600 1200 
+.iframe http://www.google.com/trends/fetchComponent?hl=en-US&q=golang&content=1&cid=TIMESERIES_GRAPH_0&export=5&w=600&h=400 600 1200
 
 * Why Go?
 
@@ -662,3 +661,4 @@ Find more about Go on [[http://golang.org][golang.org]]
 Join the community at [[https://groups.google.com/forum/#!forum/Golang-nuts][golang-nuts]]
 
 Link to the slides [[http://campoy.cat/go4java][campoy.cat/go4java]]
+
