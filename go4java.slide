@@ -212,7 +212,7 @@ Use `&` to obtain the address of a variable.
 	a := "hello"
 	p := &a
 
-Use `*` to redeference the pointer.
+Use `*` to dereference the pointer.
 
 	fmt.Print(*p + ", world")
 
@@ -235,7 +235,7 @@ Control what you pass to functions.
 
 - passing pointers: side-effects possible:
 
-	func double(x int) {
+	func double(x *int) {
 		*x *= 2
 	}
 
